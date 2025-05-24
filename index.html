@@ -219,6 +219,9 @@
         .dark-mode input, .dark-mode select { background: #23272e; color: #f7f7f7; border: 1px solid #444; }
         .dark-mode button { background: #2196f3; }
         .dark-mode .error { color: #ff8a65; }
+        .dark-mode a, .dark-mode a:visited {
+            color: #111 !important;
+        }
         .dark-mode b{color:#000}
         @media (max-width: 600px) {
             .container { padding: 1em; }
@@ -502,6 +505,7 @@
             </div>
             <div id="error" class="error"></div>
         </div>
+        <div id="elaboration-result"></div>
     </div>
     <script>
         // Step navigation
@@ -535,7 +539,7 @@
         // Replace all API URLs to use only relative paths for Vercel static hosting
         // (Vercel cannot host Python/Flask backend, so you must point to an external backend API)
         // Set your backend API base URL here:
-        const API_BASE = "https://research-ai-brzq.onrender.com";
+        const API_BASE = "http://127.0.0.1:8000";
 
         // Helper to prefix API endpoints with the backend base URL
         function apiUrl(path) {
@@ -820,9 +824,28 @@
                     '<a href="$1" target="_blank" rel="noopener">$1</a>'
                 );
                 textWithLinks = textWithLinks.replace(/\n/g, '<br>');
+
+                // --- Show image at the beginning if present ---
+                let imageHtml = "";
+                // Debug: log the image and error fields for troubleshooting
+                console.log("Elaboration image field:", json.image);
+                console.log("Elaboration image_error field:", json.image_error);
+
+                // Only show image if valid base64 data URI
+                if (json.image && typeof json.image === "string" && json.image.startsWith("data:image/") && json.image.length > 100) {
+                    imageHtml = `<div style="text-align:center;margin-bottom:1.2em;">
+                        <img src="${json.image}" alt="AI-generated illustration" style="max-width:100%;border-radius:10px;box-shadow:0 2px 8px #0002;">
+                    </div>`;
+                } else if (json.image_error) {
+                    imageHtml = `<div class="error" style="margin-bottom:1em;">[Image generation error: ${json.image_error}]</div>`;
+                } else if (json.image && json.image.length > 0) {
+                    imageHtml = `<div class="error" style="margin-bottom:1em;">[Image data is not valid base64 or not a supported format]</div>`;
+                }
+
                 elaborationSection.innerHTML = `
                     <div class="elaboration">
                         <span class="elaboration-title">Detailed Elaboration</span>
+                        ${imageHtml}
                         <div class="elaboration-content">${textWithLinks}</div>
                     </div>
                 `;
@@ -830,6 +853,16 @@
                 elaborationSection.innerHTML = `<span class='error'>${(json && json.detail) || `An error occurred. Please try again. (Last error: ${lastError})`}</span>`;
             }
         };
+
+        async function elaborateIdea(ideaText, topic, wordLimit = 500) {
+            const response = await fetch('/elaborate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idea_text: ideaText, topic: topic, word_limit: wordLimit })
+            });
+            const data = await response.json();
+            document.getElementById('elaboration-result').innerText = data.result || '';
+        }
 
         // Dark/Light mode toggle
         const toggleBtn = document.getElementById('toggle-mode-btn');
@@ -923,17 +956,30 @@
                 }
             }
             if (success && json && Array.isArray(json.ideas)) {
-                // Show ideas with expandable elaboration
-                aiIdeasList.innerHTML = json.ideas.map((idea, idx) =>
-                    `<div class="ai-idea-card" style="margin-bottom:1.2em;">
-                        <button type="button" class="hot-idea-title-btn" data-idx="${idx}" style="width:100%;text-align:left;font-weight:bold;padding:0.6em 1em;border:none;background:#e3f2fd;border-radius:5px;cursor:pointer;">
-                            <span style="font-size:1em;font-weight:bold;color:#1565c0;">Idea ${idx + 1}: ${idea}</span>
-                        </button>
+                // --- Show ideas with images if available ---
+                const images = Array.isArray(json.images) ? json.images : [];
+                aiIdeasList.innerHTML = json.ideas.map((idea, idx) => {
+                    let imageHtml = "";
+                    if (images[idx] && images[idx].image && images[idx].image.startsWith("data:image/") && images[idx].image.length > 100) {
+                        imageHtml = `<div style="text-align:center;margin-bottom:0.7em;">
+                            <img src="${images[idx].image}" alt="AI-generated illustration" style="max-width:100%;border-radius:10px;box-shadow:0 2px 8px #0002;">
+                        </div>`;
+                    } else if (images[idx] && images[idx].image_error) {
+                        imageHtml = `<div class="error" style="margin-bottom:0.5em;">[Image generation error: ${images[idx].image_error}]</div>`;
+                    }
+                    // --- Box around idea and image ---
+                    return `<div class="ai-idea-card" style="margin-bottom:1.2em; border:2px solid #1565c0; border-radius:12px; background:#f8fafc; box-shadow:0 2px 8px #0001; padding:1.2em 1.5em;">
+                        ${imageHtml}
+                        <div style="padding:0.7em 1em; background:#e3eafc; border-radius:8px; margin-bottom:0.7em;">
+                            <button type="button" class="hot-idea-title-btn" data-idx="${idx}" style="width:100%;text-align:left;font-weight:bold;padding:0.6em 1em;border:none;background:transparent;cursor:pointer;">
+                                <span style="font-size:1em;font-weight:bold;color:#1565c0;">Idea ${idx + 1}: ${typeof idea === "string" ? idea : (idea.summary || "")}</span>
+                            </button>
+                        </div>
                         <div id="hot-idea-elab-${idx}" class="hot-idea-elab" style="display:none;margin-top:0.5em;background:#f9f9f9;padding:0.7em;border-radius:5px;">
                             <span class="loading-text" style="color:var(--primary);">Loading elaboration...</span>
                         </div>
-                    </div>`
-                ).join('');
+                    </div>`;
+                }).join('');
                 // Add click listeners for elaboration
                 document.querySelectorAll('.hot-idea-title-btn').forEach(btn => {
                     btn.onclick = async function() {
