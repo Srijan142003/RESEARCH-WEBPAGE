@@ -15,6 +15,7 @@
             --elab-heading: #e65100;
             --elab-bg: #fffde7;
             --border: #e0e0e0;
+            
         }
         body {
             font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
@@ -190,6 +191,7 @@
             letter-spacing: 0.5px;
             display: inline-block;
         }
+        
         .error {
             color: #c00;
             margin-top: 1em;
@@ -306,6 +308,7 @@
             justify-content: center;
             min-height: 60vh;
             text-align: center;
+            animation: fadeIn 0.5s ease-out;
         }
         .welcome-title {
             font-size: 2.2em;
@@ -337,6 +340,7 @@
             flex-direction: column;
             align-items: center;
             margin-top: 3em;
+            animation: fadeIn 0.5s ease-out;
         }
         .choose-title {
             font-size: 1.3em;
@@ -362,7 +366,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: all 0.3s ease;
+            transform: translateY(0) scale(1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
+        .choose-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
         .choose-card-title {
             font-size: 1.13em;
             font-weight: bold;
@@ -388,6 +400,7 @@
         .ai-ideas-section {
             margin-top: 2em;
             text-align: center;
+            animation: fadeIn 0.5s ease-out;
         }
         .ai-idea-card {
             background: #f8fafc;
@@ -406,11 +419,192 @@
         }
         /* Vercel static hosting: ensure root-relative paths for assets and API */
         /* Remove or comment out any references to localhost or 127.0.0.1 in API URLs in JS below */
-    </style>
+        /*Hovering effect*/
+        button:hover, .choose-card-btn:hover, .welcome-btn:hover {
+        background: #1976d2;
+        color: #fff;
+        box-shadow: 0 0 8px #2196f380;
+        }
+        /* Enhanced loading spinner */
+        .loading-spinner {
+            border: 4px solid rgba(33, 150, 243, 0.2);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 38px;
+            height: 38px;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+
+        .loading-spinner:after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            border-top: 4px solid var(--accent);
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Section transitions */
+        .section-transition {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .main-analyzer-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+        /* Animated input fields */
+        input, select {
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus, select:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        /* Floating labels */
+        .input-group {
+            position: relative;
+            margin-top: 1.5em;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 0.6em;
+            left: 0.6em;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            color: #999;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -1.2em;
+            left: 0;
+            font-size: 0.8em;
+            color: var(--primary);
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f4f8ff;
+            border-radius: 25px;
+            padding: 0.5em 1em;
+            margin-bottom: 1.5em;
+            border: 2px solid #e3eafc;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            }
+        .search-bar .search-icon {
+            font-size: 1.2em;
+            color: #1565c0;
+            margin-right: 0.7em;
+            }
+        .search-bar input {
+            border: none;
+            background: transparent;
+            font-size: 1.1em;
+            outline: none;
+            flex: 1;
+            color: #222;
+            }
+            #analyze-papers-btn {
+                display: block;
+                margin: 2em auto 0 auto;
+                padding: 1em 2.5em;
+                background: #3b82f6;
+                color: #fff;
+                border-radius: 30px;
+                font-size: 1.15em;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 2px 8px #0001;
+                transition: background 0.2s;
+                }
+            #analyze-papers-btn:hover {
+                background: #1565c0;
+                }
+            .features-row {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 5vw;
+                margin: 3em 0 2em 0;
+                }
+
+            .feature-card {
+                text-align: center;
+                min-width: 180px;
+                max-width: 220px;
+                }
+
+            .feature-icon {
+                font-size: 2.5em;
+                margin-bottom: 0.5em;
+                }
+
+            .feature-title {
+                font-weight: 700;
+                color: #3b82f6;
+                font-size: 1.35em;
+                margin-bottom: 0.4em;
+                font-family: inherit;
+                }
+            .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.3em;
+            letter-spacing: 0.5px;
+                }
+            .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4a6bff 0%, #1565c0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(74, 107, 255, 0.3);
+                }
+ </style>
 </head>
 <body>
     <nav class="navbar">
-        <span class="navbar-title" id="nav-home-title" style="cursor:pointer;">re-ease-search.com</span>
+
+        <div class="logo">
+                <div class="logo-icon" style="gap:10em">re.</div>
+                <span id="nav-home-title" style="cursor:pointer;">re-ease-search.com</span>
+            </div>
         <div style="display:flex;gap:1em;align-items:center;">
             <button type="button" class="choose-card-btn" id="nav-hot-fresh-btn" style="margin-right:0.5em;">Hot &amp; Fresh</button>
             <button type="button" class="choose-card-btn" id="nav-advanced-btn" style="margin-right:1em;">Advanced re-ease-search</button>
@@ -433,7 +627,23 @@
                 Discover new research ideas or analyze your own topics with ease.
             </div>
             <button class="welcome-btn" id="get-started-btn">Get Started</button>
-        </div>
+        
+        <div class="features-row">
+  <div class="feature-card">
+    <div class="feature-icon" aria-label="Discover">🔍</div>
+    <div class="feature-title">Discover</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" aria-label="Innovate">💡</div>
+    <div class="feature-title">Innovate</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon" aria-label="Accelerate">🚀</div>
+    <div class="feature-title">Accelerate</div>
+  </div>
+</div>
+</div>
+
         <!-- Choose Section -->
         <div id="choose-section" class="choose-section" style="display:none;">
             <div class="choose-title">What would you like to do?</div>
@@ -467,10 +677,17 @@
             <div class="subtitle">Analyze research papers, identify gaps, and generate new research ideas with AI-powered insights.</div>
             <!-- Step 1: Topic and number of papers -->
             <div id="step1">
-                <label for="topic">Research Topic</label>
-                <input type="text" id="topic" required placeholder="e.g. Deep Learning for Medical Imaging">
+                <div class="search-bar">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="topic" placeholder="e.g. Deep Learning for Medical Imaging" />
+                </div>
+
                 <label for="num_papers">Number of Papers to Analyze (max 10)</label>
-                <input type="number" id="num_papers" min="1" max="10" value="3">
+                <div class="slider-row">
+                <input type="range" id="num_papers" min="1" max="10" value="3" oninput="numPapersValue.innerText = this.value">
+                <span id="numPapersValue">3</span>
+                </div>
+
                 <button id="analyze-papers-btn">Analyze Papers</button>
             </div>
             <!-- Step 2: Show detailed analysis of each paper -->
@@ -482,7 +699,10 @@
             <!-- Step 3: Input for ideas/gaps and word limit -->
             <div id="ideas-input-section" style="display:none;">
                 <label for="num_ideas">Number of Gaps/Ideas to Identify (max 10)</label>
-                <input type="number" id="num_ideas" min="1" max="10" value="3">
+                <div class="slider-row">
+                    <input type="range" id="num_ideas" min="1" max="10" value="3" oninput="numIdeasValue.innerText = this.value">
+                    <span id="numIdeasValue">3</span>
+                </div>
                 <label for="word_limit">Word Limit per Idea/Gap (100-250)</label>
                 <input type="number" id="word_limit" min="100" max="250" value="150">
                 <button id="generate-ideas-btn">Generate Ideas</button>
